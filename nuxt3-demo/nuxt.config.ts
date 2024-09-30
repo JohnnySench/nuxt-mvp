@@ -1,4 +1,6 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
+import {fileURLToPath} from "node:url";
+
 export default defineNuxtConfig({
   devtools: { enabled: true },
   modules: ['nuxt-swiper', '@pinia/nuxt', 'nuxt-svgo', 'vue-yandex-maps/nuxt'],
@@ -6,7 +8,10 @@ export default defineNuxtConfig({
     /* module options */
   },
   alias: {
-    pinia: "pinia/dist/pinia.mjs"
+    pinia: "pinia/dist/pinia.mjs",
+    'images': fileURLToPath(new URL('./assets/images', import.meta.url)),
+    'style': fileURLToPath(new URL('./assets/style', import.meta.url)),
+    'data': fileURLToPath(new URL('./assets/other/data', import.meta.url))
   },
   vue: {
     propsDestructure: true,
@@ -18,33 +23,65 @@ export default defineNuxtConfig({
     apikey: process.env.NUXT_API_KEY,
   },
   svgo: {
-    autoImportPath: './assets',
+    autoImportPath: './assets/svg',
+    defaultImport: 'skipsvgo',
+    svgoConfig: {
+      plugins: [
+        {
+          name: 'preset-default',
+          params: {
+            overrides: {
+              removeDoctype: false,
+              removeViewBox: false,
+            },
+          },
+        },
+      ],
+    },
   },
+  vite: {
+    css: {
+      preprocessorOptions: {
+        scss: {
+          api: 'modern-compiler',
+          additionalData: `@import "./assets/style/variables.scss";`,
+        },
+      },
+    },
+  },
+  css: [
+    "./assets/style/main.scss", // you should add main.scss somewhere in your app
+  ],
   components: [
     {
       path: 'shared',
       extensions: ['.vue'],
-      prefix: 'Shared',
+      prefix: 'shared',
     },
     {
       path: 'features',
       extensions: ['.vue'],
-      prefix: 'Feature',
+      prefix: 'feature',
     },
     {
       path: 'widgets',
       extensions: ['.vue'],
-      prefix: 'Widget',
+      prefix: 'widget',
+    },
+    {
+      path: 'components',
+      extensions: ['.vue'],
+      prefix: 'components',
     },
     {
       path: 'entities',
       extensions: ['.vue'],
-      prefix: 'Entity',
+      prefix: 'entity',
     },
     {
       path: 'layouts',
       extensions: ['.vue'],
-      prefix: 'Layout',
+      prefix: 'layout',
     },
   ],
 
